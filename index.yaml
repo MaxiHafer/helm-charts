@@ -3,6 +3,16 @@ entries:
   home-assistant:
   - apiVersion: v2
     appVersion: 2023.8.1
+    created: "2023-11-06T23:51:17.726027506Z"
+    description: A Helm chart for deploying home-assistant to kubernetes
+    digest: a4eac954b2771e19b0cfa6dc9c5c972e7a0072dec737a0546b2f46f0b62ba2ad
+    name: home-assistant
+    type: application
+    urls:
+    - https://github.com/MaxiHafer/helm-charts/releases/download/home-assistant-0.1.1/home-assistant-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 2023.8.1
     created: "2023-11-06T23:38:03.67715578Z"
     description: A Helm chart for deploying home-assistant to kubernetes
     digest: b2415e3a2512e68016a12964cc6e61c61c69edcf1bafd8a81ffa0d5a6716d9df
@@ -11,4 +21,4 @@ entries:
     urls:
     - https://github.com/MaxiHafer/helm-charts/releases/download/home-assistant-0.1.0/home-assistant-0.1.0.tgz
     version: 0.1.0
-generated: "2023-11-06T23:38:03.677206304Z"
+generated: "2023-11-06T23:51:17.726035206Z"
