@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: ghcr.io/home-assistant/home-assistant
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -38,7 +38,10 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8123
+
+environment:
+  TZ: UTC
 
 ingress:
   enabled: false
@@ -56,6 +59,20 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+persistence:
+  enabled: false
+  size: 10Gi
+
+configuration.yaml:
+  home_assistant:
+  # http:
+  #   server_host: 0.0.0.0
+  #   ip_ban_enabled: false
+  #   login_attempts_threshold: 5
+  #   use_x_forwarded_for: true
+  #   trusted_proxies:
+  #     - 10.42.0.0/24
+
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -67,13 +84,6 @@ resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 
