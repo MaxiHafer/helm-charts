@@ -44,7 +44,7 @@ environment:
   TZ: UTC
 
 ingress:
-  enabled: false
+  enabled: true
   className: "nginx"
   pathType: ImplementationSpecific
   annotations: {}
@@ -54,10 +54,11 @@ ingress:
     - host: home-assistant.local
       paths:
         - path: /
-  #tls: []
-  #  - secretName: home-assistant-tls
-  #    hosts:
-  #      - home-assistant.local
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: home-assistant-tls
+      hosts:
+        - home-assistant.local
 
 persistence:
   enabled: false
