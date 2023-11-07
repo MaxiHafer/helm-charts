@@ -64,11 +64,18 @@ spec:
             failureThreshold: 3
             timeoutSeconds: 1
             periodSeconds: 10
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - cp /secrets/config/configuration.yaml /config/configuration.yaml
           volumeMounts:
             - mountPath: /config
-              name: ha-persistent-storage
-            - mountPath: /config
-              name: ha-configuration
+              name: ha-storage
+            - mountPath: /secrets/config
+              name: ha-config
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
@@ -84,7 +91,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-        - name: ha-persistent-storage
+        - name: ha-storage
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ .Chart.Name }}-data
@@ -92,6 +99,6 @@ spec:
           emptyDir:
             sizeLimit: {{ .Values.persistence.size }}
           {{- end }}
-        - name: ha-configuration
+        - name: ha-config
           secret:
             secretName: {{ .Chart.Name }}-config
