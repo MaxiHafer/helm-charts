@@ -44,7 +44,7 @@ environment:
   TZ: UTC
 
 ingress:
-  enabled: true
+  enabled: false
   className: "nginx"
   pathType: ImplementationSpecific
   annotations: {}
