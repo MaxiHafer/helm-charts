@@ -1,61 +1,45 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "home-assistant.fullname" . -}}
-{{- $httpPort := .Values.service.port -}}
-{{- $pathtype := .Values.ingress.pathType -}}
-{{- $ingressPath := .Values.ingress.path -}}
-apiVersion: networking.k8s.io/v1
+{{- $servicePort := .Values.service.port -}}
+apiVersion: "networking.k8s.io/v1"
 kind: Ingress
 metadata:
-  name: {{ include "home-assistant.fullname" . }}
-  labels: {{ include "home-assistant.labels" . | nindent 4 }}
-{{- with .Values.ingress.annotations }}
+  name: {{ $fullName }}
+  labels:
+    {{- include "home-assistant.labels" . | nindent 4 }}
   annotations:
-{{ toYaml . | indent 4 }}
-{{- end }}
+    {{- range $key, $value := .Values.ingress.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
 spec:
-  {{- if .Values.ingress.className }}
-  ingressClassName: {{ .Values.ingress.className | quote }}
-  {{- end }}
+{{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+{{- end }}
 {{- if .Values.ingress.tls }}
   tls:
-  {{- if .ingressPath }}
   {{- range .Values.ingress.tls }}
     - hosts:
-    {{- range .hosts }}
-        - {{ . }}
-    {{- end }}
+      {{- range .hosts }}
+        - {{ tpl . $ | quote }}
+      {{- end }}
       secretName: {{ .secretName }}
-  {{- end }}
-{{- else }}
-{{ toYaml .Values.ingress.tls | indent 4 }}
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
-    {{- if $ingressPath }}
-    - host: {{ . }}
+    {{- range .Values.ingress.hosts }}
+    - host: {{ tpl .host $ | quote }}
       http:
         paths:
-          - path: {{ $ingressPath }}
-            pathType: {{ $pathtype }}
-            backend:
-              service:
-                name: {{ $fullName }}
-                port:
-                  number: {{ $httpPort }}
-    {{- else }}
-    - host: {{ .host }}
-      http:
-        paths:
-      {{- range .paths }}
+          {{- range .paths }}
           - path: {{ .path }}
-            pathType: {{ $pathtype }}
+            {{- if .pathType }}
+            pathType: {{ .pathType }}
+            {{- end }}
             backend:
               service:
                 name: {{ $fullName }}
                 port:
-                  number: {{ .servicePort | default $httpPort }}
+                  number: {{ $servicePort }}
+          {{- end }}
     {{- end }}
-  {{- end }}
- {{- end }}
- {{- end }}
+{{- end }}
