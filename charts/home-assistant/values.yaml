@@ -63,6 +63,7 @@ ingress:
 persistence:
   enabled: false
   size: 10Gi
+  # storageClassName: ""
 
 configuration.yaml:
   home_assistant:
