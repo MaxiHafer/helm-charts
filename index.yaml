@@ -3,6 +3,16 @@ entries:
   home-assistant:
   - apiVersion: v2
     appVersion: 2023.8.1
+    created: "2023-11-13T18:45:36.960042906Z"
+    description: A Helm chart for deploying home-assistant to kubernetes
+    digest: 3069e581dc56600fa17fb7353ac062eebc514534c0bb987b8f34d8064f657468
+    name: home-assistant
+    type: application
+    urls:
+    - https://github.com/MaxiHafer/helm-charts/releases/download/home-assistant-0.1.13/home-assistant-0.1.13.tgz
+    version: 0.1.13
+  - apiVersion: v2
+    appVersion: 2023.8.1
     created: "2023-11-12T23:00:40.802100743Z"
     description: A Helm chart for deploying home-assistant to kubernetes
     digest: 14fd753bd46ae8d0bbbfce48bc486fc48242d6efc2fce0e49e47f37d8c734e70
@@ -134,6 +144,16 @@ entries:
   zigbee2mqtt:
   - apiVersion: v2
     appVersion: 1.33.2
+    created: "2023-11-13T18:45:37.190140263Z"
+    description: A Helm chart for deploying zigbee2mqtt to Kubernetes
+    digest: 10344a70291a7907b6c839b20923ac6a19482252c5e9f8e4710bdc0806229806
+    name: zigbee2mqtt
+    type: application
+    urls:
+    - https://github.com/MaxiHafer/helm-charts/releases/download/zigbee2mqtt-0.0.6/zigbee2mqtt-0.0.6.tgz
+    version: 0.0.6
+  - apiVersion: v2
+    appVersion: 1.33.2
     created: "2023-11-13T13:19:28.491945689Z"
     description: A Helm chart for deploying zigbee2mqtt to Kubernetes
     digest: 7326e1273014abf1ab00a66ded483ab651426a8b73af47df50186b246c540c74
@@ -182,4 +202,4 @@ entries:
     urls:
     - https://github.com/MaxiHafer/helm-charts/releases/download/zigbee2mqtt-0.0.1/zigbee2mqtt-0.0.1.tgz
     version: 0.0.1
-generated: "2023-11-13T13:19:28.491996744Z"
+generated: "2023-11-13T18:45:37.190295264Z"
