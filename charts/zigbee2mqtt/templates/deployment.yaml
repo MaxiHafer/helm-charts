@@ -75,6 +75,7 @@ spec:
             - mountPath: /app/data
               name: {{ .Chart.Name }}-data
             - mountPath: /app/data/configuration.yaml
+              subPath: config
               name: {{ .Chart.Name }}-config
       {{- with .Values.nodeSelector }}
       nodeSelector:
