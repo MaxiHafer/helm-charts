@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mosquitto.fullname" . }}
+  labels:
+    {{- include "mosquitto.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "mosquitto.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "mosquitto.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "mosquitto.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /mosquitto/data
+              name: {{ .Chart.Name }}-data
+            - mountPath: /mosquitto/config/mosquitto.conf
+              subPath: mosquitto.conf
+              name: {{ .Chart.Name }}-config
+            {{- if .Values.authorization.enabled }}
+            - mountPath: /mosquitto/data/mosquitto.aclfile
+              subPath: mosquitto.aclfile
+              name: {{ .Chart.Name }}-authorization
+            {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.authentication.enabled}}
+      initContainers:
+        - name: {{ .Chart.Name }}-init
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /secrets/passwd.txt
+              subPath: passwd.txt
+              name: {{ .Chart.Name }}-authentication
+            - mountPath: /mosquitto/data
+              name: {{ .Chart.Name }}-data
+          command: ["sh", "-c"]
+          args: ["install -c -m 0700 /secrets/passwd.txt /mosquitto/data/mosquitto.password_file && mosquitto_passwd -U /mosquitto/data/mosquitto.password_file"]
+      {{- end}}
+      volumes:
+        - name: {{ .Chart.Name }}-data
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Chart.Name }}-data
+        {{- else }}
+          emptyDir:
+            sizeLimit: {{ .Values.persistence.size }}
+        {{- end }}
+        - name: {{ .Chart.Name }}-config
+          configMap:
+            name: {{ .Chart.Name }}-config
+        {{- if .Values.authentication.enabled }}
+        - name: {{ .Chart.Name }}-authentication
+          secret:
+            secretName: {{ .Chart.Name }}
+        {{- end }}
+        {{- if .Values.authorization.enabled }}
+        - name: {{ .Chart.Name }}-authorization
+          secret:
+            secretName: {{ .Chart.Name }}
+            defaultMode: 0700
+        {{- end}}
