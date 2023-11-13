@@ -6,6 +6,8 @@ metadata:
     {{- include "zigbee2mqtt.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       {{- include "zigbee2mqtt.selectorLabels" . | nindent 6 }}
@@ -65,9 +67,6 @@ spec:
               {{- toYaml .Values.resources.limits | nindent 14 }}
               {{- end}}
             requests:
-              {{- if .Values.genericDevicePlugin.enabled }}
-              {{ .Values.genericDevicePlugin.identifier}}: 1
-              {{- end }}
               {{- if .Values.resources.requests }}
               {{- toYaml .Values.resources.requests| nindent 14 }}
               {{- end}}
