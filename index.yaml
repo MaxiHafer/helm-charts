@@ -134,6 +134,16 @@ entries:
   zigbee2mqtt:
   - apiVersion: v2
     appVersion: 1.33.2
+    created: "2023-11-13T11:50:14.013883441Z"
+    description: A Helm chart for deploying zigbee2mqtt to Kubernetes
+    digest: 50ec53aca3a4efc9adfa6181e898ba1be11301cc449542b18b0793af92619e94
+    name: zigbee2mqtt
+    type: application
+    urls:
+    - https://github.com/MaxiHafer/helm-charts/releases/download/zigbee2mqtt-0.0.3/zigbee2mqtt-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 1.33.2
     created: "2023-11-13T10:54:51.461807637Z"
     description: A Helm chart for deploying zigbee2mqtt to Kubernetes
     digest: db79f3156478d14ae05a8e2a1f427c39d8176f729f5e8f1d9dc8ce03ec10c0e5
@@ -152,4 +162,4 @@ entries:
     urls:
     - https://github.com/MaxiHafer/helm-charts/releases/download/zigbee2mqtt-0.0.1/zigbee2mqtt-0.0.1.tgz
     version: 0.0.1
-generated: "2023-11-13T10:54:51.461844037Z"
+generated: "2023-11-13T11:50:14.013928205Z"
