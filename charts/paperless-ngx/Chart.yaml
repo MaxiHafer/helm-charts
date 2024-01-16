@@ -1,0 +1,16 @@
+apiVersion: v2
+name: paperless-ngx
+description: A Helm chart for deploying paperless-ngx to kubernetes
+
+type: application
+version: 0.0.1-alpha.1
+
+dependencies:
+  - name: postgresql
+    repository: oci://registry-1.docker.io/bitnamicharts
+    version: 13.2.30
+  - name: redis
+    repository: oci://registry-1.docker.io/bitnamicharts
+    version: 18.6.4
+
+appVersion: "2.3.3"

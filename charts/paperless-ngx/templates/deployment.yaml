@@ -1,0 +1,147 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "paperless-ngx.fullname" . }}
+  labels:
+    {{- include "paperless-ngx.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "paperless-ngx.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "paperless-ngx.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "paperless-ngx.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      {{- with .Values.paperless}}
+        - name: {{ $.Chart.Name }}
+          securityContext:
+            {{- toYaml .securityContext | nindent 12 }}
+          image: "{{ .image.repository }}:{{ .image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ .image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .resources | nindent 12 }}
+          volumeMounts:
+            {{- if .persistence.consume.enabled}}
+            - name: paperless-consume
+              mountPath: /usr/src/paperless/consume
+            {{- end}}
+            {{- if .persistence.media.enabled}}
+            - name: paperless-media
+              mountPath: /usr/src/paperless/media
+            {{- end}}
+            {{- if .persistence.data.enabled}}
+            - name: paperless-data
+              mountPath: /usr/src/paperless/data
+            {{- end}}
+            {{- if .persistence.export.enabled}}
+            - name: paperless-export
+              mountPath: /usr/src/paperless/export
+            {{- end}}
+            {{- toYaml .extraVolumeMounts | nindent 12 }}
+      {{-end}}
+      {{- if .Values.gotenberg.enabled}}
+        - name: gotenberg
+          securityContext:
+            {{- toYaml .Values.gotenberg.securityContext | nindent 12 }}
+          image: "{{ .Values.gotenberg.image.repository }}:{{ .Values.gotenberg.image.tag}}"
+          imagePullPolicy: {{ .Values.gotenberg.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.gotenberg.resources | nindent 12 }}
+      {{- end}}
+      {{- if .Values.tika.enabled}}
+        - name: tika
+          securityContext:
+            {{- toYaml .Values.tika.securityContext | nindent 12 }}
+          image: "{{ .Values.tika.image.repository }}:{{ .Values.tika.image.tag}}"
+          imagePullPolicy: {{ .Values.tika.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 9998
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.tika.resources | nindent 12 }}
+      {{- end}}
+      volumes:
+      {{- with .Values.paperless.persistence }}
+        {{- if .consume.enabled}}
+        - name: paperless-consume
+          persistentVolumeClaim:
+            claimName: {{ $.Release.Name }}-paperless-consume
+        {{- end}}
+        {{- if .media.enabled}}
+        - name: paperless-media
+          persistentVolumeClaim:
+            claimName: {{ $.Release.Name }}-paperless-media
+        {{- end}}
+        {{- if .data.enabled}}
+        - name: paperless-data
+          persistentVolumeClaim:
+            claimName: {{ $.Release.Name }}-paperless-data
+        {{- end}}
+        {{- if .export.enabled}}
+        - name: paperless-export
+          persistentVolumeClaim:
+            claimName: {{ $.Release.Name }}-paperless-export
+        {{- end}}
+      {{- end}}
+        {{- toYaml .Values.paperless.extraVolumes | nindent 8 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
